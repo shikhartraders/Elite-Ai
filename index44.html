@@ -1,618 +1,1180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
 <title>AI Studio | Elite Engine</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark-reasonable.min.css">
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark-reasonable.min.css">
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
+
 /* ================= VARIABLES & RESET ================= */
+
 :root {
-  --bg-deep: #020202;
-  --bg-panel: #0a0a0a;
-  --bg-surface: #111111;
-  
-  --gold-primary: #D4AF37;
-  --gold-light: #F4D03F;
-  --gold-dark: #8E7108;
-  --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #8E7108 100%);
-  --text-gradient: linear-gradient(to bottom, #fff, #ccc);
-  
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(10, 10, 10, 0.7);
-  
-  --font-display: 'Cinzel', serif;
-  --font-body: 'Inter', sans-serif;
-  --font-code: 'JetBrains Mono', monospace;
-  
-  --safe-area-bottom: env(safe-area-inset-bottom);
+
+--bg-deep:#020202;
+--bg-panel:#0a0a0a;
+--bg-surface:#111111;
+
+--gold-primary:#D4AF37;
+--gold-light:#F4D03F;
+--gold-dark:#8E7108;
+
+--gold-gradient:
+linear-gradient(
+135deg,
+#D4AF37 0%,
+#F4D03F 50%,
+#8E7108 100%
+);
+
+--glass-border:
+1px solid rgba(255,255,255,0.08);
+
+--glass-bg:
+rgba(10,10,10,0.7);
+
+--font-display:'Cinzel',serif;
+--font-body:'Inter',sans-serif;
+--font-code:'JetBrains Mono',monospace;
+
+--safe-area-bottom:
+env(safe-area-inset-bottom);
+
 }
 
-* { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+*{
 
-body {
-  background-color: var(--bg-deep);
-  color: #fff;
-  font-family: var(--font-body);
-  height: 100dvh; /* Dynamic height for mobile */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+margin:0;
+padding:0;
+box-sizing:border-box;
+outline:none;
+-webkit-tap-highlight-color:transparent;
+
 }
 
-/* ================= LANDING PAGE ================= */
-#landing-page {
-  position: fixed; inset: 0;
-  background: radial-gradient(circle at center, #1a1a05, #000);
-  z-index: 9999;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  transition: opacity 0.8s ease, visibility 0.8s;
+body{
+
+background-color:var(--bg-deep);
+
+color:#fff;
+
+font-family:var(--font-body);
+
+height:100dvh;
+
+display:flex;
+
+flex-direction:column;
+
+overflow:hidden;
+
 }
 
-.landing-content { text-align: center; padding: 20px; }
+/* ================= SPLASH SCREEN ================= */
 
-.logo-container h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 10vw, 5rem);
-  background: var(--gold-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  letter-spacing: 4px;
-  margin-bottom: 10px;
-  /* Blur to Focus Animation */
-  filter: blur(20px);
-  opacity: 0;
-  animation: revealLogo 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
+#landing-page{
 
-.logo-subtitle {
-  color: #666;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  margin-bottom: 40px;
-  opacity: 0;
-  animation: fadeIn 1s ease 1.5s forwards;
-}
+position:fixed;
 
-.enter-btn {
-  background: transparent;
-  color: var(--gold-primary);
-  border: 1px solid var(--gold-primary);
-  padding: 15px 40px;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  letter-spacing: 2px;
-  cursor: pointer;
-  opacity: 0;
-  transition: all 0.3s;
-  animation: fadeIn 1s ease 2s forwards;
-  position: relative;
-  overflow: hidden;
+inset:0;
+
+background:
+radial-gradient(circle at center,#1a1a05,#000);
+
+z-index:9999;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+transition:
+opacity .8s ease,
+visibility .8s;
+
 }
 
-.enter-btn::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--gold-primary);
-  transform: translateX(-100%);
-  transition: transform 0.4s ease;
-  z-index: -1;
+.landing-content{
+
+text-align:center;
+
+padding:20px;
+
 }
 
-.enter-btn:hover { color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-.enter-btn:hover::before { transform: translateX(0); }
+.logo-container h1{
 
-@keyframes revealLogo {
-  0% { filter: blur(30px); opacity: 0; transform: scale(1.1); }
-  100% { filter: blur(0); opacity: 1; transform: scale(1); }
-}
-@keyframes fadeIn { to { opacity: 1; } }
+font-family:var(--font-display);
 
-/* ================= APP INTERFACE ================= */
-#app-interface {
-  display: flex; flex-direction: column;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 1s ease;
-  visibility: hidden;
-}
+font-size:clamp(3rem,10vw,5rem);
 
-/* HEADER */
-header {
-  height: 60px;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0 20px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border-bottom: var(--glass-border);
-  z-index: 100;
-}
+background:var(--gold-gradient);
 
-.app-brand {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--gold-primary);
-  font-size: 1.2rem;
-  letter-spacing: 1px;
+-webkit-background-clip:text;
+
+background-clip:text;
+
+color:transparent;
+
+letter-spacing:4px;
+
+margin-bottom:10px;
+
+filter:blur(20px);
+
+opacity:0;
+
+animation:
+revealLogo 2s cubic-bezier(0.2,0.8,0.2,1)
+forwards;
+
 }
 
-.header-actions button {
-  background: transparent; border: none;
-  color: #888; font-size: 1.2rem;
-  margin-left: 15px; cursor: pointer;
-  transition: color 0.3s;
-}
-.header-actions button:hover { color: var(--gold-primary); }
+.logo-subtitle{
 
-/* CHAT AREA */
-#chat-viewport {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  display: flex; flex-direction: column; gap: 20px;
-  padding-bottom: 20px;
-}
+color:#666;
 
-/* Welcome Card */
-.welcome-card {
-  background: linear-gradient(180deg, #111, #0a0a0a);
-  border: 1px solid #222;
-  padding: 30px;
-  border-radius: 12px;
-  margin: 40px auto;
-  max-width: 90%;
-  text-align: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-.welcome-card h2 {
-  font-family: var(--font-display);
-  color: var(--gold-primary);
-  margin-bottom: 10px;
-}
-.welcome-card p { color: #666; font-size: 0.9rem; line-height: 1.5; }
+letter-spacing:6px;
 
-/* Messages */
-.msg-row { display: flex; width: 100%; animation: slideUp 0.3s ease; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+text-transform:uppercase;
 
-.msg-row.user { justify-content: flex-end; }
-.msg-row.ai { justify-content: flex-start; }
+font-size:.8rem;
 
-.bubble {
-  max-width: 85%;
-  padding: 12px 18px;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  position: relative;
+margin-bottom:40px;
+
+opacity:0;
+
+animation:
+fadeIn 1s ease 1.5s forwards;
+
 }
 
-/* User Design */
-.user .bubble {
-  background: var(--gold-gradient);
-  color: #050505;
-  border-radius: 18px 18px 2px 18px;
-  font-weight: 500;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+.enter-btn{
+
+background:transparent;
+
+color:var(--gold-primary);
+
+border:1px solid var(--gold-primary);
+
+padding:15px 40px;
+
+font-family:var(--font-display);
+
+font-size:1rem;
+
+letter-spacing:2px;
+
+cursor:pointer;
+
+opacity:0;
+
+transition:.3s;
+
+animation:
+fadeIn 1s ease 2s forwards;
+
+position:relative;
+
+overflow:hidden;
+
 }
 
-/* AI Design */
-.ai .bubble {
-  background: var(--bg-surface);
-  border: 1px solid #333;
-  color: #e0e0e0;
-  border-radius: 18px 18px 18px 2px;
+.enter-btn::before{
+
+content:'';
+
+position:absolute;
+
+inset:0;
+
+background:var(--gold-primary);
+
+transform:translateX(-100%);
+
+transition:transform .4s ease;
+
+z-index:-1;
+
 }
 
-/* Markdown & Code */
-.bubble code { font-family: var(--font-code); background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; font-size: 0.85em; }
-.bubble pre {
-  background: #080808; border: 1px solid #333;
-  border-radius: 8px; margin: 10px 0; overflow-x: auto;
-  position: relative;
-}
-.bubble pre code { background: transparent; padding: 15px; display: block; color: #ccc; }
+.enter-btn:hover{
 
-.copy-btn {
-  position: absolute; top: 10px; right: 10px;
-  background: #222; color: #aaa; border: 1px solid #444;
-  padding: 4px 10px; border-radius: 4px; font-size: 0.7rem;
-  cursor: pointer; transition: 0.2s;
-}
-.copy-btn:hover { background: var(--gold-primary); color: #000; border-color: var(--gold-primary); }
+color:#000;
 
-/* ================= CONTROLS & BADGE ================= */
-#bottom-panel {
-  background: var(--bg-deep);
-  border-top: var(--glass-border);
-  display: flex; flex-direction: column;
-  z-index: 50;
-  padding-bottom: var(--safe-area-bottom);
+box-shadow:
+0 0 20px rgba(212,175,55,.4);
+
 }
 
-/* Controls Wrapper */
-.controls-wrapper {
-  padding: 15px 15px 5px 15px;
+.enter-btn:hover::before{
+
+transform:translateX(0);
+
 }
 
-/* Mode Switcher */
-.mode-bar {
-  display: flex; justify-content: center; gap: 8px; margin-bottom: 12px;
-}
-.mode-btn {
-  background: transparent; border: 1px solid #333;
-  color: #666; padding: 6px 14px; border-radius: 20px;
-  font-size: 0.7rem; text-transform: uppercase; font-weight: 600;
-  cursor: pointer; transition: 0.3s;
-}
-.mode-btn.active {
-  border-color: var(--gold-primary); color: var(--gold-primary);
-  background: rgba(212, 175, 55, 0.05);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+@keyframes revealLogo{
+
+0%{
+
+filter:blur(30px);
+
+opacity:0;
+
+transform:scale(1.1);
+
 }
 
-/* Input Area */
-.input-group {
-  display: flex; gap: 10px; align-items: center;
-  background: var(--bg-surface);
-  border: 1px solid #333;
-  border-radius: 12px; padding: 5px 5px 5px 15px;
-  transition: border 0.3s;
-}
-.input-group:focus-within { border-color: var(--gold-primary); }
+100%{
 
-#user-input {
-  flex: 1; background: transparent; border: none; color: #fff;
-  font-size: 1rem; padding: 10px 0; min-height: 44px;
+filter:blur(0);
+
+opacity:1;
+
+transform:scale(1);
+
 }
 
-#send-btn {
-  width: 44px; height: 44px; border-radius: 10px;
-  background: var(--gold-primary); border: none; color: #000;
-  font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: transform 0.2s;
-}
-#send-btn:active { transform: scale(0.95); }
-
-/* === ELITE ENGINE BADGE (The Footer) === */
-.elite-badge {
-  background: #000;
-  border-top: 1px solid #222;
-  padding: 12px 0;
-  text-align: center;
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  gap: 10px;
-}
-.elite-badge::before {
-  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
-}
-.badge-icon { color: var(--gold-primary); font-size: 1rem; }
-.badge-text {
-  font-family: var(--font-display);
-  color: #888;
-  font-size: 0.75rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-weight: 700;
-  background: linear-gradient(90deg, #666, #fff, #666);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
-/* ================= MODAL ================= */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-  backdrop-filter: blur(5px);
-  z-index: 10000;
-  display: none; align-items: center; justify-content: center;
-}
-.modal-overlay.active { display: flex; }
+@keyframes fadeIn{
 
-.modal-content {
-  background: #111; border: 1px solid #333;
-  width: 90%; max-width: 350px;
-  padding: 25px; border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
-}
-.modal-content h3 { color: var(--gold-primary); font-family: var(--font-display); margin-bottom: 15px; }
-.modal-input {
-  width: 100%; padding: 12px; background: #050505;
-  border: 1px solid #333; border-radius: 8px; color: #fff;
-  margin-bottom: 20px; text-align: center;
-}
-.modal-btn {
-  background: var(--gold-primary); color: #000; border: none;
-  padding: 12px 30px; font-weight: 700; border-radius: 6px; width: 100%; cursor: pointer;
+to{
+
+opacity:1;
+
 }
 
-/* Scrollbar Hide */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+}
+
+/* ================= APP ================= */
+
+#app-interface{
+
+display:flex;
+
+flex-direction:column;
+
+height:100%;
+
+opacity:0;
+
+visibility:hidden;
+
+transition:opacity 1s ease;
+
+}
+
+/* ================= HEADER ================= */
+
+header{
+
+height:60px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:0 20px;
+
+background:var(--glass-bg);
+
+backdrop-filter:blur(12px);
+
+border-bottom:var(--glass-border);
+
+z-index:100;
+
+}
+
+.app-brand{
+
+font-family:var(--font-display);
+
+font-weight:700;
+
+color:var(--gold-primary);
+
+font-size:1.2rem;
+
+letter-spacing:1px;
+
+}
+
+.header-actions button{
+
+background:transparent;
+
+border:none;
+
+color:#888;
+
+font-size:1.2rem;
+
+cursor:pointer;
+
+}
+
+/* ================= CHAT ================= */
+
+#chat-viewport{
+
+flex:1;
+
+overflow-y:auto;
+
+padding:20px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+padding-bottom:20px;
+
+}
+
+.welcome-card{
+
+background:
+linear-gradient(
+180deg,
+#111,
+#0a0a0a
+);
+
+border:1px solid #222;
+
+padding:30px;
+
+border-radius:12px;
+
+margin:40px auto;
+
+max-width:90%;
+
+text-align:center;
+
+box-shadow:
+0 10px 40px rgba(0,0,0,.5);
+
+}
+
+.welcome-card h2{
+
+font-family:var(--font-display);
+
+color:var(--gold-primary);
+
+margin-bottom:10px;
+
+}
+
+.welcome-card p{
+
+color:#666;
+
+font-size:.9rem;
+
+line-height:1.5;
+
+}
+
+/* ================= MESSAGES ================= */
+
+.msg-row{
+
+display:flex;
+
+width:100%;
+
+animation:slideUp .3s ease;
+
+}
+
+@keyframes slideUp{
+
+from{
+
+opacity:0;
+
+transform:translateY(10px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+.msg-row.user{
+
+justify-content:flex-end;
+
+}
+
+.msg-row.ai{
+
+justify-content:flex-start;
+
+}
+
+.bubble{
+
+max-width:85%;
+
+padding:12px 18px;
+
+font-size:.95rem;
+
+line-height:1.6;
+
+position:relative;
+
+}
+
+.user .bubble{
+
+background:var(--gold-gradient);
+
+color:#050505;
+
+border-radius:
+18px 18px 2px 18px;
+
+font-weight:500;
+
+box-shadow:
+0 4px 15px rgba(212,175,55,.15);
+
+}
+
+.ai .bubble{
+
+background:var(--bg-surface);
+
+border:1px solid #333;
+
+color:#e0e0e0;
+
+border-radius:
+18px 18px 18px 2px;
+
+}
+
+/* ================= CODE ================= */
+
+.bubble code{
+
+font-family:var(--font-code);
+
+background:rgba(0,0,0,.3);
+
+padding:2px 5px;
+
+border-radius:4px;
+
+font-size:.85em;
+
+}
+
+.bubble pre{
+
+background:#080808;
+
+border:1px solid #333;
+
+border-radius:8px;
+
+margin:10px 0;
+
+overflow-x:auto;
+
+position:relative;
+
+}
+
+.bubble pre code{
+
+background:transparent;
+
+padding:15px;
+
+display:block;
+
+color:#ccc;
+
+}
+
+/* ================= INPUT ================= */
+
+#bottom-panel{
+
+background:var(--bg-deep);
+
+border-top:var(--glass-border);
+
+display:flex;
+
+flex-direction:column;
+
+padding-bottom:var(--safe-area-bottom);
+
+}
+
+.controls-wrapper{
+
+padding:15px 15px 5px 15px;
+
+}
+
+.mode-bar{
+
+display:flex;
+
+justify-content:center;
+
+gap:8px;
+
+margin-bottom:12px;
+
+}
+
+.mode-btn{
+
+background:transparent;
+
+border:1px solid #333;
+
+color:#666;
+
+padding:6px 14px;
+
+border-radius:20px;
+
+font-size:.7rem;
+
+text-transform:uppercase;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.mode-btn.active{
+
+border-color:var(--gold-primary);
+
+color:var(--gold-primary);
+
+background:rgba(212,175,55,.05);
+
+}
+
+.input-group{
+
+display:flex;
+
+gap:10px;
+
+align-items:center;
+
+background:var(--bg-surface);
+
+border:1px solid #333;
+
+border-radius:12px;
+
+padding:5px 5px 5px 15px;
+
+}
+
+#user-input{
+
+flex:1;
+
+background:transparent;
+
+border:none;
+
+color:#fff;
+
+font-size:1rem;
+
+padding:10px 0;
+
+min-height:44px;
+
+}
+
+#send-btn{
+
+width:44px;
+
+height:44px;
+
+border-radius:10px;
+
+background:var(--gold-primary);
+
+border:none;
+
+color:#000;
+
+font-size:1.1rem;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+cursor:pointer;
+
+}
+
+/* ================= FOOTER ================= */
+
+.elite-badge{
+
+background:#000;
+
+border-top:1px solid #222;
+
+padding:12px 0;
+
+text-align:center;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+gap:10px;
+
+}
+
+.badge-icon{
+
+color:var(--gold-primary);
+
+font-size:1rem;
+
+}
+
+.badge-text{
+
+font-family:var(--font-display);
+
+font-size:.75rem;
+
+letter-spacing:2px;
+
+text-transform:uppercase;
+
+color:#888;
+
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+.bubble{
+
+max-width:95%;
+
+}
+
+.logo-container h1{
+
+font-size:2.5rem;
+
+}
+
+}
+
+/* ================= SCROLL ================= */
+
+::-webkit-scrollbar{
+
+width:4px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#333;
+
+border-radius:2px;
+
+}
 
 </style>
+
 </head>
+
 <body>
 
+<!-- ================= SPLASH ================= -->
+
 <div id="landing-page">
-  <div class="landing-content">
-    <div class="logo-container">
-      <h1>SHIKHAR'S AI STUDIO</h1>
-      <div class="logo-subtitle">Neural Interface System</div>
-    </div>
-    <button class="enter-btn" onclick="enterApp()">INITIALIZE</button>
-  </div>
+
+<div class="landing-content">
+
+<div class="logo-container">
+
+<h1>SHIKHAR'S AI STUDIO</h1>
+
+<div class="logo-subtitle">
+Neural Interface System
 </div>
+
+</div>
+
+<button
+class="enter-btn"
+onclick="enterApp()">
+
+INITIALIZE
+
+</button>
+
+</div>
+
+</div>
+
+<!-- ================= APP ================= -->
 
 <div id="app-interface">
-  
-  <header>
-    <div class="app-brand">SHIKHAR'S AI STUDIO</div>
-    <div class="header-actions">
-      <button onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
-    </div>
-  </header>
 
-  <div id="chat-viewport">
-    <div class="welcome-card">
-      <h2>SYSTEM READY</h2>
-      <p>Elite Engine Online. Awaiting Command.</p>
-    </div>
-  </div>
+<header>
 
-  <div id="bottom-panel">
-    <div class="controls-wrapper">
-      <div class="mode-bar">
-        <button class="mode-btn active" onclick="setMode('chat', this)">Neural</button>
-        <button class="mode-btn" onclick="setMode('code', this)">Code</button>
-        <button class="mode-btn" onclick="setMode('flux', this)">Flux</button>
-      </div>
-      
-      <div class="input-group">
-        <input type="text" id="user-input" placeholder="Enter command..." autocomplete="off">
-        <button id="send-btn" onclick="sendMessage()"><i class="fa-solid fa-arrow-right"></i></button>
-      </div>
-    </div>
+<div class="app-brand">
+SHIKHAR'S AI STUDIO
+</div>
 
-    <div class="elite-badge">
-      <i class="fa-solid fa-microchip badge-icon"></i>
-      <span class="badge-text">By Shikhar Pandey Elite Engine</span>
-      <i class="fa-solid fa-microchip badge-icon"></i>
-    </div>
-  </div>
+<div class="header-actions">
+
+<button>
+
+<i class="fa-solid fa-microchip"></i>
+
+</button>
 
 </div>
 
-<div id="settings-modal" class="modal-overlay">
-  <div class="modal-content">
-    <h3>SECURE CONNECTION</h3>
-    <input type="password" id="api-key" class="modal-input" placeholder="Paste OpenRouter/OpenAI Key">
-    <button class="modal-btn" onclick="saveSettings()">ESTABLISH LINK</button>
-  </div>
+</header>
+
+<div id="chat-viewport">
+
+<div class="welcome-card">
+
+<h2>SYSTEM READY</h2>
+
+<p>
+Elite Engine Online.<br>
+Awaiting Command.
+</p>
+
+</div>
+
+</div>
+
+<div id="bottom-panel">
+
+<div class="controls-wrapper">
+
+<div class="mode-bar">
+
+<button
+class="mode-btn active"
+onclick="setMode('chat',this)">
+
+Neural
+
+</button>
+
+<button
+class="mode-btn"
+onclick="setMode('code',this)">
+
+Code
+
+</button>
+
+<button
+class="mode-btn"
+onclick="setMode('flux',this)">
+
+Flux
+
+</button>
+
+</div>
+
+<div class="input-group">
+
+<input
+type="text"
+id="user-input"
+placeholder="Enter command..."
+autocomplete="off">
+
+<button
+id="send-btn"
+onclick="sendMessage()">
+
+<i class="fa-solid fa-arrow-right"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="elite-badge">
+
+<i class="fa-solid fa-microchip badge-icon"></i>
+
+<span class="badge-text">
+
+By Shikhar Pandey Elite Engine
+
+</span>
+
+<i class="fa-solid fa-microchip badge-icon"></i>
+
+</div>
+
+</div>
+
 </div>
 
 <script>
-// --- CONFIGURATION ---
-const HARDCODED_KEY = "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"; // Optional: Paste key here
 
-// --- STATE ---
+/* ================= STATE ================= */
+
 let currentMode = "chat";
-let chatHistory = { chat: [], code: [], flux: [] };
-let apiKey = localStorage.getItem("elite_engine_key") || HARDCODED_KEY;
 
-// --- DOM ---
-const landing = document.getElementById('landing-page');
-const app = document.getElementById('app-interface');
-const chatView = document.getElementById('chat-viewport');
-const inputField = document.getElementById('user-input');
-const modal = document.getElementById('settings-modal');
+let chatHistory = {
 
-// --- INIT ---
-window.onload = () => {
-  hljs.highlightAll();
-  inputField.addEventListener("keypress", (e) => {
-    if(e.key === "Enter") sendMessage();
-  });
+chat:[],
+code:[],
+flux:[]
+
 };
 
-function enterApp() {
-  landing.style.opacity = '0';
-  landing.style.visibility = 'hidden';
-  app.style.visibility = 'visible';
-  app.style.opacity = '1';
-  
-  if(!apiKey) setTimeout(() => modal.classList.add('active'), 1000);
+/* ================= DOM ================= */
+
+const landing =
+document.getElementById(
+"landing-page"
+);
+
+const app =
+document.getElementById(
+"app-interface"
+);
+
+const chatView =
+document.getElementById(
+"chat-viewport"
+);
+
+const inputField =
+document.getElementById(
+"user-input"
+);
+
+/* ================= INIT ================= */
+
+window.onload=()=>{
+
+hljs.highlightAll();
+
+inputField.addEventListener(
+
+"keypress",
+
+(e)=>{
+
+if(e.key==="Enter"){
+
+sendMessage();
+
 }
 
-// --- SETTINGS ---
-function openSettings() { modal.classList.add('active'); document.getElementById('api-key').value = apiKey; }
-function saveSettings() {
-  const key = document.getElementById('api-key').value.trim();
-  if(key) {
-    apiKey = key;
-    localStorage.setItem("elite_engine_key", key);
-    modal.classList.remove('active');
-    addSystemMsg("Connection Secure.");
-  }
 }
 
-// --- MODE SWITCHING ---
-function setMode(mode, btn) {
-  // Save current
-  chatHistory[currentMode] = Array.from(chatView.children).map(c => c.outerHTML);
-  
-  // Switch
-  currentMode = mode;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  // Restore
-  chatView.innerHTML = "";
-  if(chatHistory[mode].length > 0) {
-    chatHistory[mode].forEach(html => chatView.innerHTML += html);
-    // Re-bind events if needed, but simple innerHTML works for visuals
-  } else {
-    chatView.innerHTML = `<div class="welcome-card"><h2>${mode.toUpperCase()} MODE</h2><p>Engine Switched. Ready.</p></div>`;
-  }
-  
-  const hints = { chat: "Enter command...", code: "Describe parameters...", flux: "Visual prompt..." };
-  inputField.placeholder = hints[mode];
+);
+
+};
+
+/* ================= ENTER APP ================= */
+
+function enterApp(){
+
+landing.style.opacity="0";
+
+landing.style.visibility=
+"hidden";
+
+app.style.visibility=
+"visible";
+
+app.style.opacity="1";
+
 }
 
-// --- MESSAGING ---
-async function sendMessage() {
-  const text = inputField.value.trim();
-  if(!text) return;
-  
-  // PDF Command Check
-  if(text.toLowerCase().includes("pdf") && (text.toLowerCase().includes("code") || text.toLowerCase().includes("project"))) {
-    downloadPDF();
-    inputField.value = "";
-    return;
-  }
+/* ================= MODE ================= */
 
-  if(!apiKey) { openSettings(); return; }
+function setMode(mode,btn){
 
-  // User Msg
-  addBubble('user', text);
-  inputField.value = "";
-  
-  // Loading
-  const loadingId = addLoading();
+chatHistory[currentMode]=
+Array.from(
+chatView.children
+).map(c=>c.outerHTML);
 
-  // Prompt Logic
-  const prompts = {
-    chat: "You are a premium AI assistant. Be concise and helpful.",
-    code: "You are an elite coding engine. Provide clean, efficient code. Always use markdown blocks.",
-    flux: "You are a creative engine. Describe visuals vividly."
-  };
+currentMode=mode;
 
-  try {
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "openai/gpt-4o-mini",
-        messages: [{role: "system", content: prompts[currentMode]}, {role: "user", content: text}]
-      })
-    });
-    
-    const data = await res.json();
-    const reply = data.choices[0].message.content;
-    
-    document.getElementById(loadingId).remove();
-    addBubble('ai', reply);
+document
+.querySelectorAll(".mode-btn")
+.forEach(
 
-  } catch(e) {
-    document.getElementById(loadingId).remove();
-    addSystemMsg("Error: " + e.message);
-  }
+b=>b.classList.remove(
+"active"
+)
+
+);
+
+btn.classList.add(
+"active"
+);
+
+chatView.innerHTML="";
+
+if(chatHistory[mode].length){
+
+chatHistory[mode]
+.forEach(
+
+html=>chatView.innerHTML+=html
+
+);
+
+}else{
+
+chatView.innerHTML=
+`
+<div class="welcome-card">
+
+<h2>
+${mode.toUpperCase()} MODE
+</h2>
+
+<p>
+Engine Switched. Ready.
+</p>
+
+</div>
+`;
+
 }
 
-// --- UI HELPERS ---
-function addBubble(role, content) {
-  const row = document.createElement('div');
-  row.className = `msg-row ${role}`;
-  
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-  
-  if(role === 'ai') {
-    bubble.innerHTML = marked.parse(content);
-    bubble.querySelectorAll('pre code').forEach(block => {
-      hljs.highlightElement(block);
-      addCopyBtn(block.parentElement);
-    });
-  } else {
-    bubble.textContent = content;
-  }
-  
-  row.appendChild(bubble);
-  chatView.appendChild(row);
-  chatView.scrollTop = chatView.scrollHeight;
 }
 
-function addLoading() {
-  const id = 'load-' + Date.now();
-  const row = document.createElement('div');
-  row.id = id;
-  row.className = 'msg-row ai';
-  row.innerHTML = `<div class="bubble" style="color:#666"><i class="fa-solid fa-circle-notch fa-spin"></i> Processing...</div>`;
-  chatView.appendChild(row);
-  chatView.scrollTop = chatView.scrollHeight;
-  return id;
+/* ================= SEND ================= */
+
+async function sendMessage(){
+
+const text=
+inputField.value.trim();
+
+if(!text) return;
+
+addBubble(
+"user",
+text
+);
+
+inputField.value="";
+
+const loadingId=
+addLoading();
+
+/* ================= FAKE AI ================= */
+
+setTimeout(()=>{
+
+document
+.getElementById(
+loadingId
+)
+.remove();
+
+const replies=[
+
+"Elite Engine online.",
+
+"Command accepted.",
+
+"Processing completed successfully.",
+
+"Advanced neural response generated.",
+
+"System analysis completed.",
+
+"Awaiting next command.",
+
+"Code execution ready.",
+
+"Flux engine activated."
+
+];
+
+const reply=
+replies[
+Math.floor(
+Math.random()*replies.length
+)
+];
+
+addBubble(
+"ai",
+reply
+);
+
+},1200);
+
 }
 
-function addSystemMsg(msg) {
-  const div = document.createElement('div');
-  div.style.textAlign = 'center'; div.style.color = '#444'; div.style.fontSize = '0.8rem'; div.style.margin = '10px 0';
-  div.textContent = msg;
-  chatView.appendChild(div);
+/* ================= ADD MESSAGE ================= */
+
+function addBubble(role,content){
+
+const row=
+document.createElement("div");
+
+row.className=
+`msg-row ${role}`;
+
+const bubble=
+document.createElement("div");
+
+bubble.className=
+"bubble";
+
+if(role==="ai"){
+
+bubble.innerHTML=
+marked.parse(content);
+
+bubble
+.querySelectorAll(
+"pre code"
+)
+.forEach(block=>{
+
+hljs.highlightElement(
+block
+);
+
+});
+
+}else{
+
+bubble.textContent=
+content;
+
 }
 
-function addCopyBtn(pre) {
-  const btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
-  btn.onclick = () => {
-    navigator.clipboard.writeText(pre.querySelector('code').innerText);
-    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
-    setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy', 2000);
-  };
-  pre.appendChild(btn);
+row.appendChild(bubble);
+
+chatView.appendChild(row);
+
+chatView.scrollTop=
+chatView.scrollHeight;
+
 }
 
-// --- PDF EXPORT ---
-function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  
-  doc.setFont("courier");
-  doc.setFontSize(10);
-  doc.text("ELITE ENGINE | SESSION REPORT", 10, 10);
-  doc.line(10, 12, 200, 12);
-  
-  let y = 20;
-  
-  // Simple text extraction from bubbles
-  document.querySelectorAll('.bubble').forEach(b => {
-    const isUser = b.parentElement.classList.contains('user');
-    const role = isUser ? "USER" : "AI";
-    const text = b.innerText;
-    
-    if(y > 270) { doc.addPage(); y = 10; }
-    
-    doc.setFont("courier", "bold");
-    doc.text(`[${role}]`, 10, y);
-    y += 5;
-    
-    doc.setFont("courier", "normal");
-    const lines = doc.splitTextToSize(text, 180);
-    lines.forEach(l => {
-      if(y > 275) { doc.addPage(); y = 10; }
-      doc.text(l, 10, y);
-      y += 4;
-    });
-    y += 8;
-  });
-  
-  doc.save(`Elite_Engine_Report_${Date.now()}.pdf`);
-  addSystemMsg("PDF Report Generated.");
+/* ================= LOADING ================= */
+
+function addLoading(){
+
+const id=
+"load-"+Date.now();
+
+const row=
+document.createElement("div");
+
+row.id=id;
+
+row.className=
+"msg-row ai";
+
+row.innerHTML=
+`
+<div class="bubble">
+
+<i class="fa-solid fa-circle-notch fa-spin"></i>
+
+ Processing...
+
+</div>
+`;
+
+chatView.appendChild(row);
+
+chatView.scrollTop=
+chatView.scrollHeight;
+
+return id;
+
 }
+
 </script>
+
 </body>
 </html>
